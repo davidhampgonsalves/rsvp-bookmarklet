@@ -19,7 +19,7 @@ javascript:(function() {
     updateWPM(model);
 
     model.words = getWords(text);
-    
+
     read.apply(model);
 
     function setupKeyboardControl(model) {
@@ -50,7 +50,7 @@ javascript:(function() {
                 case 39:
                     /* jump forward 20 words and then draw a single frame if paused */
                     model.index += 20;
-                    if(model.index >= model.words.length) 
+                    if(model.index >= model.words.length)
                         model.index = model.words.length-1;
                     if(model.pause)
                         read.apply(model, [null, true]);
@@ -111,28 +111,28 @@ javascript:(function() {
         switch (word.length) {
             case 0:
             case 1:
-            pivot = 0;
-            break;
+                pivot = 0;
+                break;
             case 2:
             case 3:
             case 4:
             case 5:
-            pivot = 1;
-            break;
+                pivot = 1;
+                break;
             case 6:
             case 7:
             case 8:
             case 9:
-            pivot = 2;
-            break;
+                pivot = 2;
+                break;
             case 10:
             case 11:
             case 12:
             case 13:
-            pivot = 3;
-            break;
+                pivot = 3;
+                break;
             default:
-            pivot = 4;
+                pivot = 4;
         };
 
         return [word.substring(0,pivot), word.substring(pivot, pivot+1), word.substring(pivot+1)];
@@ -158,7 +158,7 @@ javascript:(function() {
         var vAlign = this.canvas.height / 2;
 
         this.canvasContext.clearRect (0, 0, this.canvas.width, this.canvas.height);
-        
+
         this.canvasContext.fillStyle = 'black';
         this.canvasContext.textAlign = 'right';
         this.canvasContext.fillText(wordParts[0], center - (charWidth/2), vAlign);
@@ -182,22 +182,25 @@ javascript:(function() {
         /* this should be moved to a different structure that runs all the rules and only builds the regex once */
         if(this.index < 5) {
             this.nextInterval = this.baseInterval * (5 - this.index);
-        } else if(/.[^a-zA-Z\d\s:]./.test(word)) {
+        } else if(/(\.|\?|!).[^a-zA-Z\d\s:]?$/.test(word)) {
             /* slow down for weird(special chars) words */
-            this.nextInterval = this.baseInterval * 1.3;
+            this.nextInterval = this.baseInterval * 3;
+        } else if(/.[^a-zA-Z\d\s:]$/.test(word)) {
+            /* slow down for weird(special chars) words */
+            this.nextInterval = this.baseInterval * 2;
         } else if(word.length > 7) {
             /* slow down for longer words */
-            this.nextInterval = this.baseInterval * 1.1;
+            this.nextInterval = this.baseInterval * (1 + (0.2 * Math.sqrt(word.length)));
         } else if(/^[^a-zA-Z\d\s:]/.test(word)) {
-            /* slow down for beginning of quote or pharagraph or werid chars */
-            this.nextInterval = this.baseInterval * 1.3;
+            /* slow down for beginning of quote or paragraph or weird chars */
+            this.nextInterval = this.baseInterval * 2;
         } else if(/[^a-zA-Z\d\s:]$/.test(word)) {
             this.nextInterval = this.baseInterval * 1.3;
         } else {
             this.nextInterval = this.baseInterval;
         }
 
-        console.log(this.nextInterval);
+        //console.log(this.nextInterval);
 
         if(!isSingleFrame)
             this.nextAnimation = window.requestAnimationFrame(read.bind(this));
@@ -208,7 +211,7 @@ javascript:(function() {
 
         /*TODO: add base reset styles first*/
         for(var attr in styles) {
-            node.style[attr]=styles[attr]; 
+            node.style[attr]=styles[attr];
         }
     };
 
@@ -245,9 +248,9 @@ javascript:(function() {
     };
 
     function setupMainContainer(model) {
-        
+
         var container = document.getElementById('davidhampgonsalves-container-1234kj1;2l3k4j');
-        
+
         /* remove lost containers(caused by clicking bookmarklet multiple times) */
         if(container) {
             if(container.parentNode)
@@ -256,23 +259,23 @@ javascript:(function() {
 
         container = document.createElement('div');
         container.setAttribute('id', 'davidhampgonsalves-container-1234kj1;2l3k4j');
-    
+
         var styles = {position:'fixed',
             display:'table',
             border: '20px solid #333',
-            background:'#EEE', 
-            width: '400px', 
-            height:'150px', 
-            top:'50%', 
-            left:'50%', 
-            'margin-top':'-100px', 
+            background:'#EEE',
+            width: '400px',
+            height:'150px',
+            top:'50%',
+            left:'50%',
+            'margin-top':'-100px',
             'margin-left':'-150px',
             'font-family':'Arial',
             'font-size':'15px',
             'text-align': 'center',
             'z-index' : '9999999999999999999'
         };
-        applyStylesToNode(container, styles); 
+        applyStylesToNode(container, styles);
 
         var wordContainer = document.createElement('canvas');
         applyStylesToNode(wordContainer, {height: '150px', width:'300px'});
