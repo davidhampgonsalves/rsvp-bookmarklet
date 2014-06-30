@@ -234,6 +234,16 @@ javascript:(function() {
                 for (var i = 0, len = sel.rangeCount; i < len; ++i) {
                     container.appendChild(sel.getRangeAt(i).cloneContents());
                 }
+
+                /* Some sites don't have spaces between paragraphs, which stuffs up our word splitting later. */
+                /* Assumes p's are children of container. */
+                for (var i = 0; i < container.childNodes.length; i++) {
+                    tagname = container.childNodes[i].tagName || container.childNodes[i].nodeName;
+                    if (tagname.toLowerCase() == 'p') {
+                        container.childNodes[i].innerHTML += ' ';
+                    }
+                }
+
                 html = container.innerHTML;
             }
         } else if (typeof document.selection != 'undefined') {
